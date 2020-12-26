@@ -1,3 +1,5 @@
+import render from './templates/invoice/index';
+
 import express from 'express';
 import bodyParser from 'body-parser';
 
@@ -23,6 +25,29 @@ app.post(
     }
   }
 );
+
+app.get('/invoice', async (_, res) => {
+  const nameInInvoice: string = 'Name of some company';
+
+  try {
+    const html = render(nameInInvoice);
+    const pdfBuffer = await htmlToPdf(html);
+    res.contentType('application/pdf');
+    res.setHeader('Content-Length', pdfBuffer.length);
+
+    // TODO: read node env from process.evn
+    const NODE_ENV = 'development';
+    if (NODE_ENV !== 'development') {
+      const fileName = `test-invoice.pdf`;
+      res.attachment(fileName);
+      res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+    }
+
+    res.send(pdfBuffer);
+  } catch (err) {
+    throw err;
+  }
+});
 
 app.listen(3000, () => {
   console.log('Listenning at 3000');
