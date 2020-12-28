@@ -1,8 +1,11 @@
 import puppeteer from 'puppeteer';
 
+const { CHROME_EXECUTABLE_PATH } = process.env;
+
 export const htmlToPdf = async (html: string): Promise<Buffer> => {
   const browser = await puppeteer.launch({
     headless: true,
+    executablePath: CHROME_EXECUTABLE_PATH, // executablePath is required to be run from docker but not from local machine
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu'],
   });
 

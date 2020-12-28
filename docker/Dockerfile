@@ -1,0 +1,19 @@
+FROM node:14.15.3-alpine3.10
+
+RUN apk --no-cache add bash g++ gcc libgcc make python chromium
+
+ENV NODE_ENV development
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV CHROME_EXECUTABLE_PATH='/usr/bin/chromium-browser'
+
+WORKDIR "/app"
+
+COPY ./package*.json ./
+
+RUN npm install
+
+COPY . .
+
+CMD ["npm", "run", "start"]
+
+# TODO: Convert into 2 stage built
