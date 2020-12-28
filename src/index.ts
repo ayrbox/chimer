@@ -4,6 +4,8 @@ import express, { NextFunction, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 
 import { htmlToPdf } from './htmlToPdf';
+import HttpError from './Errors/HttpError';
+import UnknownError from './Errors/UnknownError';
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
@@ -14,7 +16,6 @@ app.post(
   bodyParser.text({ type: 'text/html' }),
   async (req, res, next) => {
     const { body: htmlToConvert, params } = req;
-
     const fileName = `${params.fileName || 'unknown'}.pdf`;
 
     try {
@@ -23,7 +24,7 @@ app.post(
       res.contentType('application/pdf');
       res.send(pdfBuffer);
     } catch (err) {
-      next(err);
+      next(new HttpError(500, 'Unable to convert html to pdf.', err));
     }
   }
 );
@@ -40,23 +41,28 @@ app.get('/invoice/:invoiceId', async (req, res, next: NextFunction) => {
       const fileName = `${invoiceId}.pdf`;
       res.attachment(fileName);
     }
-
     res.send(pdfBuffer);
   } catch (err) {
-    next(err);
+    next(
+      new HttpError(err.status || 500, 'Unable to generate pdf invoice.', err)
+    );
   }
 });
 
-app.use(async (error: Error, _: Request, res: Response, next: NextFunction) => {
-  if (error) {
-    return res.status(500).send({
-      status: 500,
-      msg: error.message,
-    });
-  } else {
-    next();
+app.use(
+  async (error: HttpError, _: Request, res: Response, next: NextFunction) => {
+    if (error) {
+      const { status, message, stack } = error;
+      console.error(message, stack); // to be replaced by logger
+      return res.status(status).send({
+        status,
+        msg: message,
+      });
+    } else {
+      next();
+    }
   }
-});
+);
 
 app.listen(3000, () => {
   console.log('Listenning at 3000');
