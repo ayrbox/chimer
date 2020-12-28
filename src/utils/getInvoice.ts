@@ -9,6 +9,7 @@ export interface InvoiceItem {
 }
 
 export interface InvoiceData {
+  id: string;
   invoiceNumber: number;
   createdDate: Date;
   dueDate: Date;

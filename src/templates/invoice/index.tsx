@@ -17,14 +17,16 @@ const wrapContent = async (contentHtml: string): Promise<string> => {
   return layoutHtml.replace('<%content%>', contentHtml);
 };
 
-const render = async (): Promise<string> => {
+const render = async (): Promise<[string, string]> => {
   const invoiceData = getInvoice();
 
   const content = ReactDOMServer.renderToStaticMarkup(
     <Invoice detail={invoiceData} />
   );
 
-  return await wrapContent(content);
+  const fullHtml = await wrapContent(content);
+
+  return [invoiceData.id, fullHtml];
 };
 
 export default render;

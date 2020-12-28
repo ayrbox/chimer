@@ -29,15 +29,14 @@ app.post(
 
 app.get('/invoice', async (_, res) => {
   try {
-    const html = await invoiceRenderer();
+    const [invoiceID, html] = await invoiceRenderer();
     const pdfBuffer = await htmlToPdf(html);
     res.contentType('application/pdf');
     res.setHeader('Content-Length', pdfBuffer.length);
 
     if (NODE_ENV !== 'development') {
-      const fileName = `test-invoice.pdf`;
+      const fileName = `${invoiceID}.pdf`;
       res.attachment(fileName);
-      res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
     }
 
     res.send(pdfBuffer);
