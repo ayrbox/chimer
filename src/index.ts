@@ -1,4 +1,4 @@
-import render from './templates/invoice/index';
+import invoiceRenderer from './templates/invoice/index';
 
 import express from 'express';
 import bodyParser from 'body-parser';
@@ -27,10 +27,8 @@ app.post(
 );
 
 app.get('/invoice', async (_, res) => {
-  const nameInInvoice: string = 'Name of some company';
-
   try {
-    const html = render(nameInInvoice);
+    const html = await invoiceRenderer();
     const pdfBuffer = await htmlToPdf(html);
     res.contentType('application/pdf');
     res.setHeader('Content-Length', pdfBuffer.length);

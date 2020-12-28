@@ -15,7 +15,7 @@ export const htmlToPdf = async (html: string): Promise<Buffer> => {
       waitUntil: 'domcontentloaded',
     });
 
-    return await page.pdf();
+    return await page.pdf({ format: 'A4' });
   } catch (pdfErr) {
     throw pdfErr;
   } finally {

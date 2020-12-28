@@ -1,27 +1,30 @@
 import * as React from 'react';
 import ReactDOMServer from 'react-dom/server';
+import fs from 'fs';
+import path from 'path';
+import { promisify } from 'util';
 
-export interface InvoiceIndexProps {
-  name: string;
-  timestamp: string;
-}
+import getInvoice from '../../utils/getInvoice';
 
-const InvoiceIndex = ({ name, timestamp }: InvoiceIndexProps) => {
-  return (
-    <div>
-      <h1>{name}</h1>
-      <p>{timestamp}</p>
-    </div>
-  );
+import Invoice from './Invoice';
+
+const readFile = promisify(fs.readFile);
+
+const wrapContent = async (contentHtml: string): Promise<string> => {
+  const layoutFile = path.join(__dirname, 'layout.html');
+  const layoutHtml = await readFile(layoutFile, 'utf-8');
+
+  return layoutHtml.replace('<%content%>', contentHtml);
 };
 
-const render = (nameInInvoice: string): string => {
-  const t = new Date().toISOString();
+const render = async (): Promise<string> => {
+  const invoiceData = getInvoice();
 
   const content = ReactDOMServer.renderToStaticMarkup(
-    <InvoiceIndex name={nameInInvoice} timestamp={t} />
+    <Invoice detail={invoiceData} />
   );
-  return content;
+
+  return await wrapContent(content);
 };
 
 export default render;
