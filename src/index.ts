@@ -1,5 +1,6 @@
 import invoiceRenderer from './templates/invoice/index';
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
+
 import bodyParser from 'body-parser';
 
 import { htmlToPdf } from './htmlToPdf';
@@ -11,7 +12,7 @@ const app = express();
 app.post(
   '/pdf/:fileName',
   bodyParser.text({ type: 'text/html' }),
-  async (req, res) => {
+  async (req, res, next) => {
     const { body: htmlToConvert, params } = req;
 
     const fileName = `${params.fileName || 'unknown'}.pdf`;
@@ -22,12 +23,12 @@ app.post(
       res.contentType('application/pdf');
       res.send(pdfBuffer);
     } catch (err) {
-      throw err;
+      next(err);
     }
   }
 );
 
-app.get('/invoice/:invoiceId', async (req, res) => {
+app.get('/invoice/:invoiceId', async (req, res, next: NextFunction) => {
   try {
     const { invoiceId } = req.params;
     const html = await invoiceRenderer(invoiceId);
@@ -42,7 +43,18 @@ app.get('/invoice/:invoiceId', async (req, res) => {
 
     res.send(pdfBuffer);
   } catch (err) {
-    throw err;
+    next(err);
+  }
+});
+
+app.use(async (error: Error, _: Request, res: Response, next: NextFunction) => {
+  if (error) {
+    return res.status(500).send({
+      status: 500,
+      msg: error.message,
+    });
+  } else {
+    next();
   }
 });
 
