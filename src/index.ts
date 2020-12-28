@@ -1,9 +1,10 @@
 import invoiceRenderer from './templates/invoice/index';
-
 import express from 'express';
 import bodyParser from 'body-parser';
 
 import { htmlToPdf } from './htmlToPdf';
+
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
 const app = express();
 
@@ -33,8 +34,6 @@ app.get('/invoice', async (_, res) => {
     res.contentType('application/pdf');
     res.setHeader('Content-Length', pdfBuffer.length);
 
-    // TODO: read node env from process.evn
-    const NODE_ENV = 'development';
     if (NODE_ENV !== 'development') {
       const fileName = `test-invoice.pdf`;
       res.attachment(fileName);
