@@ -42,9 +42,13 @@ Factory.define('invoice')
     items.reduce((total, { amount }) => total + amount, 0)
   );
 
-const getInvoice = (): InvoiceData => {
+const getInvoice = (invoiceId: string): InvoiceData => {
   const noOfItems = random.number({ min: 5, max: 20 });
-  return Factory.build('invoice', {}, { noOfItems }) as InvoiceData;
+  return Factory.build(
+    'invoice',
+    { id: invoiceId },
+    { noOfItems }
+  ) as InvoiceData;
 };
 
 export default getInvoice;

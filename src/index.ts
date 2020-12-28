@@ -27,15 +27,16 @@ app.post(
   }
 );
 
-app.get('/invoice', async (_, res) => {
+app.get('/invoice/:invoiceId', async (req, res) => {
   try {
-    const [invoiceID, html] = await invoiceRenderer();
+    const { invoiceId } = req.params;
+    const html = await invoiceRenderer(invoiceId);
     const pdfBuffer = await htmlToPdf(html);
     res.contentType('application/pdf');
     res.setHeader('Content-Length', pdfBuffer.length);
 
     if (NODE_ENV !== 'development') {
-      const fileName = `${invoiceID}.pdf`;
+      const fileName = `${invoiceId}.pdf`;
       res.attachment(fileName);
     }
 
