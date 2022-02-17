@@ -1,0 +1,24 @@
+body {
+  font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+  text-align: center;
+  color: #777;
+}
+
+body h1 {
+  font-weight: 300;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+  color: #000;
+}
+
+body h3 {
+  font-weight: 300;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  font-style: italic;
+  color: #555;
+}
+
+body a {
+  color: #06f;
+}

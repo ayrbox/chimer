@@ -1,4 +1,4 @@
-import invoiceRenderer from "./templates/invoice/index";
+import invoiceRenderer from "./templates/invoice";
 import express, { NextFunction, Request, Response } from "express";
 
 import bodyParser from "body-parser";
