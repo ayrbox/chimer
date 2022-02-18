@@ -1,6 +1,5 @@
 import { Factory } from 'rosie';
-
-import { company, random, date, address, internet } from 'faker';
+import { company, random, date, address, internet, datatype } from 'faker';
 
 export interface InvoiceItem {
   id: number;
@@ -21,9 +20,9 @@ export interface InvoiceData {
   currency: string;
 }
 
-Factory.define('invoice')
-  .attr('id', () => random.uuid())
-  .attr('invoiceNumber', () => random.number())
+Factory.define<InvoiceData>('invoice')
+  .attr('id', () => datatype.uuid())
+  .attr('invoiceNumber', () => datatype.number())
   .attr('createdDate', () => date.recent())
   .attr('dueDate', () => date.soon(30))
   .attr('companyName', () => company.companyName())
@@ -34,16 +33,16 @@ Factory.define('invoice')
     new Array(noOfItems).fill(null).map((_, id) => ({
       id,
       description: random.words(),
-      amount: random.float(),
+      amount: datatype.float(),
     }))
   )
   .attr('currency', 'GBP')
-  .attr('total', ['items'], (items: InvoiceItem[]) =>
+  .attr('total', ['items'], (items: InvoiceItem[]): number =>
     items.reduce((total, { amount }) => total + amount, 0)
   );
 
 const getInvoice = (invoiceId: string): InvoiceData => {
-  const noOfItems = random.number({ min: 5, max: 20 });
+  const noOfItems = datatype.number({ min: 5, max: 20 });
   return Factory.build(
     'invoice',
     { id: invoiceId },
